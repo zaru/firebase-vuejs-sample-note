@@ -8,7 +8,7 @@
       <dd><input type="password" v-model="password"></dd>
     </dl>
     <button @click="signUp">submit</button>
-    <h2>サインイン・サインアップ</h2>
+    <h2>サインイン</h2>
     <dl>
       <dt>Email</dt>
       <dd><input type="text" v-model="email"></dd>
@@ -35,7 +35,7 @@ export default {
     signUp () {
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
         user => {
-          console.log(user)
+          this.$router.push('/')
         },
         err => {
           alert(err.message)
@@ -45,7 +45,6 @@ export default {
     signIn () {
       firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
         user => {
-          console.log(user)
           this.$router.push('/')
         },
         err => {

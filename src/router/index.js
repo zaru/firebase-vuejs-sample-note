@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Firebase from 'firebase'
 
-import HelloWorld from '@/components/HelloWorld'
+import Note from '@/components/Note'
 import UserSession from '@/components/UserSession'
 
 Vue.use(Router)
@@ -11,8 +11,16 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld,
+      name: 'Root',
+      component: Note,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/note/:noteId',
+      name: 'Note',
+      component: Note,
       meta: {
         requiresAuth: true
       }
