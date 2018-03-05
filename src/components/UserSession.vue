@@ -59,7 +59,13 @@ export default {
         this.user = user
       } else {
         // 匿名ログイン
-        // firebase.auth().signInAnonymously().catch(console.error)
+        firebase.auth().signInAnonymously().catch(console.error)
+        firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            this.$router.push('/')
+          } else {
+          }
+        })
       }
     })
   }

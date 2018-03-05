@@ -20,17 +20,20 @@ const store = new Vuex.Store({
     init ({ commit }) {
       return new Promise((resolve) => {
         firebase.auth().onAuthStateChanged((user) => {
+          console.log(user)
           console.log('onAuthStateChanged callback')
           let profile = {
             auth: false,
             uid: '',
-            email: ''
+            email: '',
+            isAnonymous: false
           }
           if (user) {
             profile = {
               auth: true,
               uid: user.uid,
-              email: user.email
+              email: user.email,
+              isAnonymous: user.isAnonymous
             }
           }
           commit('setUser', profile)

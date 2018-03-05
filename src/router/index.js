@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Firebase from 'firebase'
 
 import Note from '@/components/Note'
+import SignUp from '@/components/SignUp'
 import UserSession from '@/components/UserSession'
 
 Vue.use(Router)
@@ -24,6 +25,10 @@ const router = new Router({
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: '/sign_up',
+      component: SignUp
     },
     {
       path: '/sign_in',

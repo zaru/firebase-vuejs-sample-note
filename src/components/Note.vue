@@ -1,7 +1,21 @@
 <template>
   <div class="note container">
     <div class="header">
-      {{ this.$route.params.noteId }}
+      <ul>
+        <li>note id: {{ note_id }}</li>
+        <li>user id: {{ user }}</li>
+      </ul>
+      <ul class="header-actions">
+        <li>
+          <button @click="newDoc">New</button>
+        </li>
+        <li v-if="user.isAnonymous">
+          <router-link to="/sign_up" tag="button">SignUp</router-link>
+        </li>
+        <li v-if="!user.isAnonymous">
+          <router-link to="/" tag="button">LogOut</router-link>
+        </li>
+      </ul>
     </div>
     <div class="main">
       <textarea v-model="body" @keyup="sync()"></textarea>
@@ -9,6 +23,12 @@
     <div class="right">
       <ul class="users">
         <li v-for="user in users" :key="user.uid">{{ user.uid }}</li>
+      </ul>
+      <ul class="notes">
+        <li v-for="note in notes" :key="note.id">
+          <!--TODO: 遷移はするけどデータの再取得はまだしてない-->
+          <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.id }}</router-link>
+        </li>
       </ul>
     </div>
   </div>
@@ -25,7 +45,8 @@ export default {
     return {
       note_id: null,
       body: '',
-      users: []
+      users: [],
+      notes: []
     }
   },
   methods: {
@@ -37,19 +58,32 @@ export default {
       }).catch(error => {
         console.error('Error updating document: ', error)
       })
-    }, 2000)
-  },
-  beforeMount () {
-    if (!this.$route.params.noteId) {
+    }, 2000),
+    newDoc: function () {
       db.collection('notes').add({
         title: '',
         body: '',
         user_id: this.user.uid
       }).then(docRef => {
         this.$router.push({name: 'Note', params: { noteId: docRef.id }})
+        this.body = ''
       }).catch(error => {
         console.error('Error adding document: ', error)
       })
+    },
+    fetchNotes () {
+      db.collection('notes').where('user_id', '==', this.user.uid).get().then(result => {
+        result.forEach(doc => {
+          this.notes.push({
+            id: doc.id
+          })
+        })
+      })
+    }
+  },
+  beforeMount () {
+    if (!this.$route.params.noteId) {
+      this.newDoc()
     } else {
       this.note_id = this.$route.params.noteId
       db.collection('notes').doc(this.note_id).get().then(doc => {
@@ -64,6 +98,7 @@ export default {
       .onSnapshot(doc => {
         console.log('Current data: ', doc && doc.data())
       })
+    this.fetchNotes()
   },
   computed: {
     ...mapGetters([
@@ -73,7 +108,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .container {
     display: grid;
     width: 100%;
@@ -89,12 +124,24 @@ export default {
 
   .header {
     grid-area: header;
+    position: relative;
   }
   .main {
     grid-area: main;
   }
   .right {
     grid-area: right;
+  }
+
+  .header-actions {
+    margin:0;
+    padding:0;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    li {
+      display: inline;
+    }
   }
 
   textarea {
