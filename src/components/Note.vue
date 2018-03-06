@@ -16,9 +16,12 @@
           <router-link to="/" tag="button">LogOut</router-link>
         </li>
       </ul>
+      <transition name="fade">
+        <div v-if="show_sync_info" class="sync-info">auto saving...</div>
+      </transition>
     </div>
     <div class="main">
-      <textarea v-model="body" @keyup="sync()"></textarea>
+      <textarea v-model="body" @keyup="sync"></textarea>
     </div>
     <div class="right">
       <ul class="users">
@@ -26,7 +29,6 @@
       </ul>
       <ul class="notes">
         <li v-for="note in notes" :key="note.id">
-          <!--TODO: 遷移はするけどデータの再取得はまだしてない-->
           <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.id }}</router-link>
         </li>
       </ul>
@@ -47,7 +49,8 @@ export default {
       body: '',
       users: [],
       notes: [],
-      unsubscribe: null
+      unsubscribe: null,
+      show_sync_info: false
     }
   },
   watch: {
@@ -55,6 +58,10 @@ export default {
   },
   methods: {
     sync: _.throttle(function () {
+      this.show_sync_info = true
+      setTimeout(() => {
+        this.show_sync_info = false
+      }, 2000)
       db.collection('notes').doc(this.note_id).update({
         body: this.body
       }).then(() => {
@@ -62,7 +69,7 @@ export default {
       }).catch(error => {
         console.error('Error updating document: ', error)
       })
-    }, 2000),
+    }, 5000),
     newDoc () {
       db.collection('notes').add({
         title: '',
@@ -150,6 +157,21 @@ export default {
     li {
       display: inline;
     }
+  }
+
+  .sync-info {
+    position: absolute;
+    top: 10px;
+    right: 150px;
+    background: #c3ffd9;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 1.0s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 
   textarea {
