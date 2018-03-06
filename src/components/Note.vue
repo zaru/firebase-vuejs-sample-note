@@ -46,8 +46,12 @@ export default {
       note_id: null,
       body: '',
       users: [],
-      notes: []
+      notes: [],
+      unsubscribe: null
     }
+  },
+  watch: {
+    '$route': 'fetchData'
   },
   methods: {
     sync: _.throttle(function () {
@@ -59,7 +63,7 @@ export default {
         console.error('Error updating document: ', error)
       })
     }, 2000),
-    newDoc: function () {
+    newDoc () {
       db.collection('notes').add({
         title: '',
         body: '',
@@ -71,6 +75,19 @@ export default {
         console.error('Error adding document: ', error)
       })
     },
+    fetchData () {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
+      if (!this.$route.params.noteId) {
+        return this.newDoc()
+      }
+      this.note_id = this.$route.params.noteId
+      this.unsubscribe = db.collection('notes').doc(this.note_id)
+        .onSnapshot(doc => {
+          this.body = doc.data().body
+        })
+    },
     fetchNotes () {
       db.collection('notes').where('user_id', '==', this.user.uid).get().then(result => {
         result.forEach(doc => {
@@ -81,23 +98,13 @@ export default {
       })
     }
   },
-  beforeMount () {
+  created () {
     if (!this.$route.params.noteId) {
       this.newDoc()
     } else {
       this.note_id = this.$route.params.noteId
-      db.collection('notes').doc(this.note_id).get().then(doc => {
-        this.body = doc.data().body
-      }).catch(error => {
-        console.log(error)
-      })
+      this.fetchData()
     }
-  },
-  mounted () {
-    db.collection('notes').doc(this.$route.params.noteId)
-      .onSnapshot(doc => {
-        console.log('Current data: ', doc && doc.data())
-      })
     this.fetchNotes()
   },
   computed: {
@@ -131,6 +138,7 @@ export default {
   }
   .right {
     grid-area: right;
+    overflow: scroll;
   }
 
   .header-actions {
