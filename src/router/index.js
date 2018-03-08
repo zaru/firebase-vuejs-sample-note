@@ -5,10 +5,12 @@ import Firebase from 'firebase'
 import Note from '@/components/Note'
 import SignUp from '@/components/SignUp'
 import UserSession from '@/components/UserSession'
+import NotFound from '@/components/NotFound'
 
 Vue.use(Router)
 
 const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -33,6 +35,10 @@ const router = new Router({
     {
       path: '/sign_in',
       component: UserSession
+    },
+    {
+      path: '/not_found',
+      component: NotFound
     }
   ]
 })
