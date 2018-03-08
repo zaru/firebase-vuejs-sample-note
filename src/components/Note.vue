@@ -77,6 +77,9 @@ export default {
         user_id: this.user.uid
       }).then(docRef => {
         this.$router.push({name: 'Note', params: { noteId: docRef.id }})
+        this.note.push({
+          id: docRef.id
+        })
         this.body = ''
       }).catch(error => {
         console.error('Error adding document: ', error)
