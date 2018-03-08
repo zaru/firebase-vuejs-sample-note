@@ -27,8 +27,8 @@
       <ul class="users">
         <li v-for="user in users" :key="user.uid">{{ user.uid }}</li>
       </ul>
-      <ul class="notes">
-        <li v-for="note in notes" :key="note.id">
+      <ul class="note">
+        <li v-for="note in note" :key="note.id">
           <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.id }}</router-link>
         </li>
       </ul>
@@ -48,7 +48,7 @@ export default {
       note_id: null,
       body: '',
       users: [],
-      notes: [],
+      note: [],
       unsubscribe: null,
       show_sync_info: false
     }
@@ -62,7 +62,7 @@ export default {
       setTimeout(() => {
         this.show_sync_info = false
       }, 2000)
-      db.collection('notes').doc(this.note_id).update({
+      db.collection('note').doc(this.note_id).update({
         body: this.body
       }).then(() => {
         console.log('Document successfully updated!')
@@ -71,7 +71,7 @@ export default {
       })
     }, 5000),
     newDoc () {
-      db.collection('notes').add({
+      db.collection('note').add({
         title: '',
         body: '',
         user_id: this.user.uid
@@ -90,15 +90,17 @@ export default {
         return this.newDoc()
       }
       this.note_id = this.$route.params.noteId
-      this.unsubscribe = db.collection('notes').doc(this.note_id)
+      this.unsubscribe = db.collection('note').doc(this.note_id)
         .onSnapshot(doc => {
           this.body = doc.data().body
+        }, () => {
+          this.$router.push('/not_found')
         })
     },
     fetchNotes () {
-      db.collection('notes').where('user_id', '==', this.user.uid).get().then(result => {
+      db.collection('note').where('user_id', '==', this.user.uid).get().then(result => {
         result.forEach(doc => {
-          this.notes.push({
+          this.note.push({
             id: doc.id
           })
         })
