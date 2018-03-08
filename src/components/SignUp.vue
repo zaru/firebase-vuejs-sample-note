@@ -13,6 +13,7 @@
 
 <script>
 import firebase from 'firebase'
+import {db} from '../firebase'
 
 export default {
   name: 'SingUp',
@@ -27,8 +28,13 @@ export default {
     signUp () {
       const credential = firebase.auth.EmailAuthProvider.credential(this.email, this.password)
       firebase.auth().currentUser.linkWithCredential(credential).then(user => {
-        console.log('Anonymous account successfully upgraded', user)
-        this.$router.push('/')
+        db.collection('user').doc(user.uid).set({
+          created_at: Date.now()
+        }).then(docRef => {
+          this.$router.push('/')
+        }).catch(error => {
+          console.error('Error adding document: ', error)
+        })
       }, error => {
         console.log('Error upgrading anonymous account', error)
       })
