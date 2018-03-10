@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Firebase from 'firebase'
 
 import Note from '@/components/Note'
+import NotePublic from '@/components/NotePublic'
 import SignUp from '@/components/SignUp'
 import UserSession from '@/components/UserSession'
 import NotFound from '@/components/NotFound'
@@ -27,6 +28,11 @@ const router = new Router({
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: '/@note/:noteId?',
+      name: 'NotePublic',
+      component: NotePublic
     },
     {
       path: '/sign_up',

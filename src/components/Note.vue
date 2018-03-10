@@ -20,10 +20,14 @@
         <div v-if="show_sync_info" class="sync-info">auto saving...</div>
       </transition>
     </div>
-    <div class="main">
-      <textarea v-model="body" @keyup="sync"></textarea>
+    <div class="main_meta">
+      <input type="text" v-model="title" @keyup="sync" placeholder="title">
+      <input type="text" v-model="image" @keyup="sync" placeholder="image url">
     </div>
-    <div class="right">
+    <div class="main_body">
+      <textarea v-model="body" @keyup="sync" placeholder="input your story"></textarea>
+    </div>
+    <div class="sidebar">
       <ul class="users">
         <li v-for="user in users" :key="user.uid">{{ user.uid }}</li>
       </ul>
@@ -46,6 +50,8 @@ export default {
   data () {
     return {
       note_id: null,
+      title: '',
+      image: '',
       body: '',
       users: [],
       note: [],
@@ -63,6 +69,8 @@ export default {
         this.show_sync_info = false
       }, 2000)
       db.collection('note').doc(this.note_id).update({
+        title: this.title,
+        image: this.image,
         body: this.body
       }).then(() => {
         console.log('Document successfully updated!')
@@ -73,6 +81,7 @@ export default {
     newDoc () {
       db.collection('note').add({
         title: '',
+        image: '',
         body: '',
         user_id: this.user.uid
       }).then(docRef => {
@@ -95,6 +104,8 @@ export default {
       this.note_id = this.$route.params.noteId
       this.unsubscribe = db.collection('note').doc(this.note_id)
         .onSnapshot(doc => {
+          this.title = doc.data().title
+          this.image = doc.data().image
           this.body = doc.data().body
         }, () => {
           this.$router.push('/not_found')
@@ -133,24 +144,23 @@ export default {
     width: 100%;
     height: 100%;
     grid-template-areas: "header header"
-    "main right";
-    grid-template-columns: 10fr 2fr;
-    grid-template-rows: 80px 1fr;
-  }
-  .container > div {
-    border: 1px dashed #888;
+    "main_meta sidebar"
+    "main_body sidebar";
+    grid-template-columns: 1fr 250px;
+    grid-template-rows: 80px 150px 1fr;
   }
 
   .header {
     grid-area: header;
-    position: relative;
   }
-  .main {
-    grid-area: main;
+  .main_meta {
+    grid-area: main_meta;
   }
-  .right {
-    grid-area: right;
-    overflow: scroll;
+  .sidebar {
+    grid-area: sidebar;
+  }
+  .main_body {
+    grid-area: main_body;
   }
 
   .header-actions {
@@ -179,12 +189,32 @@ export default {
     opacity: 0;
   }
 
-  textarea {
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
+  .main_meta {
+    input {
+      box-sizing: border-box;
+      width: 90%;
+      border: none;
+      border-bottom: 1px solid #999;
+      margin: 10px 5%;
+      padding: 10px;
+      font-size: 16px;
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+  .main_body {
+    textarea {
+      box-sizing: border-box;
+      width: 90%;
+      height: 90%;
+      border: none;
+      margin: 10px 5%;
+      padding: 10px;
+      font-size: 16px;
+      &:focus {
+        outline: none;
+      }
+    }
   }
 </style>
