@@ -1,7 +1,7 @@
 <template>
   <div class="note_public">
     <h1>{{ title }}</h1>
-    <p class="thumbnail"><img :src="image"></p>
+    <p class="thumbnail" v-if="image"><img :src="image"></p>
     <div class="body" v-html="compiledMarkdown"></div>
   </div>
 </template>
@@ -9,6 +9,7 @@
 <script>
 import {db} from '../firebase'
 import marked from 'marked'
+import renderer from '@/lib/note_marked'
 
 export default {
   name: 'NotePublic',
@@ -44,7 +45,7 @@ export default {
   },
   computed: {
     compiledMarkdown () {
-      return marked(this.body, { sanitize: true })
+      return marked(this.body, { sanitize: true, renderer: renderer })
     }
   }
 }

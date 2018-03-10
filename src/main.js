@@ -6,8 +6,15 @@ import VueFire from 'vuefire'
 import App from './App'
 import router from './router'
 import store from './store'
+import config from 'config'
 
 Vue.config.productionTip = false
+
+const configMixin = Vue.mixin({
+  created: function () {
+    this.$config = config
+  }
+})
 
 Vue.use(VueFire)
 
@@ -17,6 +24,7 @@ store.dispatch('init').then(() => {
     el: '#app',
     router,
     store,
+    configMixin,
     components: { App },
     template: '<App/>'
   })

@@ -25,7 +25,7 @@
       <input type="text" v-model="image" @keyup="sync" placeholder="image url">
     </div>
     <div class="main_body">
-      <textarea v-model="body" @keyup="sync" placeholder="input your story"></textarea>
+      <textarea ref="main_textarea" v-model="body" @keyup="sync" placeholder="input your story"></textarea>
     </div>
     <div class="sidebar">
       <ul class="users">
@@ -36,6 +36,13 @@
           <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.id }}</router-link>
         </li>
       </ul>
+      <ul class="giphy">
+        <li v-for="giphy in giphys" :key="giphy.id">
+          <video loop muted width="150" @mouseenter="play_giphy" @mouseleave="stop_giphy" @click="insert_giphy" :data-url="giphy.images.preview.mp4_url">
+            <source :src="giphy.images.preview.mp4_url" type="video/mp4" />
+          </video>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -44,6 +51,8 @@
 import { mapGetters } from 'vuex'
 import {db} from '../firebase'
 import _ from 'lodash'
+import GphApiClient from 'giphy-js-sdk-core'
+import insertAtCursor from '@/lib/insert_at_cursor'
 
 export default {
   name: 'Note',
@@ -56,7 +65,8 @@ export default {
       users: [],
       note: [],
       unsubscribe: null,
-      show_sync_info: false
+      show_sync_info: false,
+      giphys: []
     }
   },
   watch: {
@@ -119,6 +129,17 @@ export default {
           })
         })
       })
+    },
+    play_giphy (e) {
+      e.target.play()
+      console.log(e)
+    },
+    stop_giphy (e) {
+      e.target.pause()
+    },
+    insert_giphy (e) {
+      this.body = insertAtCursor(this.$refs.main_textarea, '# giphy: ' + e.target.dataset.url)
+      this.sync()
     }
   },
   created () {
@@ -129,6 +150,16 @@ export default {
       this.fetchData()
     }
     this.fetchNotes()
+
+    const gphClient = GphApiClient(this.$config.giphy_api_key)
+    gphClient.trending('gifs', {})
+      .then((response) => {
+        this.giphys = response.data
+        console.log(response)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   },
   computed: {
     ...mapGetters([
