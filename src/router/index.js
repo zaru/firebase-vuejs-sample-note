@@ -30,7 +30,7 @@ const router = new Router({
       }
     },
     {
-      path: '/@note/:noteId?',
+      path: '/@note/:noteId',
       name: 'NotePublic',
       component: NotePublic
     },
