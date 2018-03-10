@@ -18,6 +18,14 @@
     ],
     "rewrites": [
       {
+        "source": "/@note/?noteId=*",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/@note/*",
+        "function": "note"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
