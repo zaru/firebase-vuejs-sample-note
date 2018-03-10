@@ -1,21 +1,25 @@
 # firebase-sample-note
 
-> A Vue.js project
+firebase, firestore, functions + Vue.js + CloudFront, Lambda@edge SPA sample.
 
-## Build Setup
+## deploy
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
+```
 npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
+firestore deploy
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## AWS Lambda@edge deploy
+
+```
+cd lamnbda
+sls deploy --stage production
+```
+
+## develop
+
+```
+npm run dev
+# or
+firebase serve --only functions,hosting
+```
