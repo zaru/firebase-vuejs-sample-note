@@ -50,7 +50,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import {db} from '../firebase'
-import _ from 'lodash'
+import throttle from 'lodash/throttle'
 import GphApiClient from 'giphy-js-sdk-core'
 import insertAtCursor from '@/lib/insert_at_cursor'
 
@@ -73,7 +73,7 @@ export default {
     '$route': 'fetchData'
   },
   methods: {
-    sync: _.throttle(function () {
+    sync: throttle(function () {
       this.show_sync_info = true
       setTimeout(() => {
         this.show_sync_info = false
