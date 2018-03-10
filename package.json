@@ -5,13 +5,14 @@
   "author": "zaru@sakuraba <zarutofu@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "NODE_ENV=development webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
-    "build": "node build/build.js"
+    "build": "NODE_ENV=production node build/build.js"
   },
   "dependencies": {
     "firebase": "^4.10.1",
+    "giphy-js-sdk-core": "^1.0.3",
     "lodash": "^4.17.5",
     "marked": "^0.3.17",
     "vue": "^2.5.13",
