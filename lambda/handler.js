@@ -1,16 +1,22 @@
-'use strict';
+'use strict'
 
-module.exports.hello = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
+const bots = [
+  'Twitterbot',
+  'facebookexternalhit',
+  'Slackbot'
+]
 
-  callback(null, response);
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
-};
+module.exports.redirect = (event, context, callback) => {
+  const request = event.Records[0].cf.request
+  const headers = request.headers
+  console.log(request.uri)
+  console.log(headers['user-agent'])
+  const isBot = bots.some(v => {
+    return headers['user-agent'][0].value.includes(v)
+  })
+  if (isBot) {
+    request.uri = request.uri.replace(/^\/@note/g, '/@note_bot')
+  }
+  console.log(request.uri)
+  callback(null, request)
+}
