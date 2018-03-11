@@ -32,8 +32,8 @@
         <li v-for="user in users" :key="user.uid">{{ user.uid }}</li>
       </ul>
       <ul class="note">
-        <li v-for="note in note" :key="note.id">
-          <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.id }}</router-link>
+        <li v-for="note in notes" :key="note.id">
+          <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.data.title || note.id }}</router-link>
         </li>
       </ul>
       <giphy-list v-on:syncBody="syncBody" :textarea="$refs.main_textarea"></giphy-list>
@@ -57,7 +57,7 @@ export default {
       image: '',
       body: '',
       users: [],
-      note: [],
+      notes: [],
       unsubscribe: null,
       show_sync_info: false
     }
@@ -91,11 +91,9 @@ export default {
         image: '',
         body: '',
         user_id: this.user.uid
-      }).then(docRef => {
-        this.$router.push({name: 'Note', params: { noteId: docRef.id }})
-        this.note.push({
-          id: docRef.id
-        })
+      }).then(doc => {
+        this.$router.push({name: 'Note', params: { noteId: doc.id }})
+        this.notes.push({id: doc.id, data: {}})
         this.body = ''
       }).catch(error => {
         console.error('Error adding document: ', error)
@@ -121,9 +119,7 @@ export default {
     fetchNotes () {
       db.collection('note').where('user_id', '==', this.user.uid).get().then(result => {
         result.forEach(doc => {
-          this.note.push({
-            id: doc.id
-          })
+          this.notes.push({id: doc.id, data: doc.data()})
         })
       })
     }
