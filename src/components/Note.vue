@@ -36,13 +36,7 @@
           <router-link :to="{ name: 'Note', params: { noteId: note.id }}">{{ note.id }}</router-link>
         </li>
       </ul>
-      <ul class="giphy">
-        <li v-for="giphy in giphys" :key="giphy.id">
-          <video loop muted width="150" @mouseenter="play_giphy" @mouseleave="stop_giphy" @click="insert_giphy" :data-url="giphy.images.preview.mp4_url">
-            <source :src="giphy.images.preview.mp4_url" type="video/mp4" />
-          </video>
-        </li>
-      </ul>
+      <giphy-list v-on:syncBody="syncBody" :textarea="$refs.main_textarea"></giphy-list>
     </div>
   </div>
 </template>
@@ -51,10 +45,10 @@
 import { mapGetters } from 'vuex'
 import {db} from '../firebase'
 import throttle from 'lodash/throttle'
-import GphApiClient from 'giphy-js-sdk-core'
-import insertAtCursor from '@/lib/insert_at_cursor'
+import GiphyList from './GiphyList'
 
 export default {
+  components: {GiphyList},
   name: 'Note',
   data () {
     return {
@@ -65,8 +59,7 @@ export default {
       users: [],
       note: [],
       unsubscribe: null,
-      show_sync_info: false,
-      giphys: []
+      show_sync_info: false
     }
   },
   watch: {
@@ -88,6 +81,10 @@ export default {
         console.error('Error updating document: ', error)
       })
     }, 5000),
+    syncBody (payload) {
+      this.body = payload.body
+      this.sync()
+    },
     newDoc () {
       db.collection('note').add({
         title: '',
@@ -129,17 +126,6 @@ export default {
           })
         })
       })
-    },
-    play_giphy (e) {
-      e.target.play()
-      console.log(e)
-    },
-    stop_giphy (e) {
-      e.target.pause()
-    },
-    insert_giphy (e) {
-      this.body = insertAtCursor(this.$refs.main_textarea, '# giphy: ' + e.target.dataset.url)
-      this.sync()
     }
   },
   created () {
@@ -150,16 +136,6 @@ export default {
       this.fetchData()
     }
     this.fetchNotes()
-
-    const gphClient = GphApiClient(this.$config.giphy_api_key)
-    gphClient.trending('gifs', {})
-      .then((response) => {
-        this.giphys = response.data
-        console.log(response)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
   },
   computed: {
     ...mapGetters([
