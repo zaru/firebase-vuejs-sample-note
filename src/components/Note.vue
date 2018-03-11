@@ -44,6 +44,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import {db} from '../firebase'
+import DbNote from '../db/note'
 import throttle from 'lodash/throttle'
 import GiphyList from './GiphyList'
 
@@ -117,11 +118,7 @@ export default {
         })
     },
     fetchNotes () {
-      db.collection('note').where('user_id', '==', this.user.uid).get().then(result => {
-        result.forEach(doc => {
-          this.notes.push({id: doc.id, data: doc.data()})
-        })
-      })
+      DbNote.fetchNotes(this.user.uid, this.notes)
     }
   },
   created () {

@@ -4,6 +4,7 @@ import Firebase from 'firebase'
 
 import Note from '@/components/Note'
 import NotePublic from '@/components/NotePublic'
+import User from '@/components/User'
 import SignUp from '@/components/SignUp'
 import UserSession from '@/components/UserSession'
 import NotFound from '@/components/NotFound'
@@ -33,6 +34,11 @@ const router = new Router({
       path: '/@note/:noteId',
       name: 'NotePublic',
       component: NotePublic
+    },
+    {
+      path: '/user/:userId',
+      name: 'User',
+      component: User
     },
     {
       path: '/sign_up',
