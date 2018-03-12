@@ -2,7 +2,7 @@ import firebase from 'firebase'
 import 'firebase/firestore'
 
 const config = {
-  apiKey: 'AIzaSyBGqhmGksHNseOlIgs1SbiBFs51UG7zE7E',
+  apiKey: process.env.firebase_api_key,
   authDomain: 'fir-sample-note.firebaseapp.com',
   databaseURL: 'https://fir-sample-note.firebaseio.com',
   projectId: 'fir-sample-note',

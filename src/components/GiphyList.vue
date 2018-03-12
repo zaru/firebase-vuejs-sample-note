@@ -10,7 +10,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import GphApiClient from 'giphy-js-sdk-core'
+import GiphyClient from '@/lib/giphy_client'
 import insertAtCursor from '@/lib/insert_at_cursor'
 
 export default {
@@ -36,7 +36,7 @@ export default {
     }
   },
   created () {
-    const gphClient = GphApiClient(this.$config.giphy_api_key)
+    const gphClient = GiphyClient
     gphClient.trending('gifs', {})
       .then((response) => {
         this.giphys = response.data

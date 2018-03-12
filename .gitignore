@@ -15,3 +15,5 @@ yarn-error.log*
 *.map
 
 functions/lib/
+src/config/development.js
+src/config/production.js
